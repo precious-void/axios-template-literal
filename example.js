@@ -1,24 +1,26 @@
-const http = require("./dist/index.js");
+import Axios from "axios";
+import axiosTemplateLiteral from "./dist/cjs/index";
 
-http`
-  GET https://httpbin.org/get HTTP/1.1
-  Accept: application/json
-`
-  .then(res => {
-    console.log("Request one:", res.body);
-    return http`
-    POST https://httpbin.org/post HTTP/1.1
-    Content-Type: application/json
+/**
+ * Create you default axios instance
+ */
+const instance = Axios.create({
+	baseURL: "https://some-domain.com/api/",
+	timeout: 1000,
+	headers: { "X-Custom-Header": "foobar" },
+});
 
-    ${JSON.stringify({
-      hello: "world",
-      awesome: true,
-    })}
-  `;
-  })
-  .then(res => {
-    console.log("Request two:", res.body);
-  })
-  .catch(err => {
-    console.log("Oh no!", err);
-  });
+/**
+ * Pass axios instance to axiosTemplateLiteral function
+ */
+const axios = axiosTemplateLiteral(instance);
+
+axios.get`
+	/get
+	Content-Type: application/json
+
+	${JSON.stringify({
+		hello: "world",
+		awesome: true,
+	})}
+`;
