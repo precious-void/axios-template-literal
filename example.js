@@ -13,7 +13,7 @@ const instance = Axios.create({
 /**
  * Pass axios instance to axiosTemplateLiteral function
  */
-const axios = axiosTemplateLiteral(instance);
+const axios = createAxiosTemplateLiteral(instance);
 
 axios.get`
 	/get

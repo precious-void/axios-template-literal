@@ -5,7 +5,6 @@ module.exports = {
 		sourceType: "module",
 	},
 	rules: {
-		quotes: ["error", "double", { avoidEscape: true }],
 		indent: "off",
 		"max-len": ["error", 120],
 	},
