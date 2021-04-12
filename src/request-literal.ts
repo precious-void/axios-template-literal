@@ -1,67 +1,72 @@
 import axios, { AxiosInstance, AxiosPromise, Method } from "axios";
-import { Headers, Options, Parameters } from "./types";
+import { Headers, Options, BodyParameters } from "./types";
 
 const line0Regex = /^([A-z]+) ([\S]+)/;
 
 const axiosTemplateLiteral = <T = any>(
 	axiosInstance: AxiosInstance,
-	method: Method | undefined,
+	method: Method | undefined = undefined,
 	strings: TemplateStringsArray,
 	...values: any[]
 ): AxiosPromise<T> => {
 	try {
-		// Split out the lines
-		const lines = String.raw(strings, ...values)
-			.trim()
-			.split("\n");
+		const requestConfig = getRequestConfig(method, strings, ...values);
 
-		// Separate the header and body lines
-		const line0 = lines.shift()!;
-		const headerLines: string[] = [];
-		const bodyLines: string[] = [];
+		const opts: Options = {
+			url: requestConfig.url,
+			method: requestConfig.method!,
+			headers: requestConfig.headers,
+		};
 
-		let isConsumingHeaders = true;
-		lines.forEach((line) => {
-			if (!line.trim()) {
-				isConsumingHeaders = false;
-				return;
-			}
-
-			if (isConsumingHeaders) headerLines.push(line);
-			else bodyLines.push(line.trim());
+		return axiosInstance.request({
+			...opts,
+			data: requestConfig.body
 		});
-
-		// Parse
-		const params = parseLine0(line0);
-		const headers = parseHeaders(headerLines);
-		const body = bodyLines.length > 0 ? bodyLines.join("\n") : undefined;
-
-		return axiosRequest<T>({ params, headers, body });
 	} catch (err) {
 		return Promise.reject(err);
 	}
 };
 
-const axiosRequest = <T>({
-	params,
-	headers,
-	body,
-}: {
-	params: Parameters;
-	headers: Headers;
-	body?: string;
-}): AxiosPromise<T> => {
-	const opts: Options = {
-		url: params.url,
-		method: params.method,
-		headers,
-	};
+const getRequestConfig = (
+	method: Method | undefined,
+	strings: TemplateStringsArray,
+	...values: any[]
+) => {
+	// Split out the lines
+	const lines = String.raw(strings, ...values)
+		.trim()
+		.split("\n");
 
-	if (body) opts.body = body;
-	return axios.request(opts);
+	// Separate the header and body lines
+	const line0 = lines.shift()!;
+	const headerLines: string[] = [];
+	const bodyLines: string[] = [];
+
+	let isConsumingHeaders = true;
+	lines.forEach((line) => {
+		if (!line.trim()) {
+			isConsumingHeaders = false;
+			return;
+		}
+
+		if (isConsumingHeaders) headerLines.push(line);
+		else bodyLines.push(line.trim());
+	});
+
+	// Parse
+	const params = parseLine0(line0);
+	const headers = parseHeaders(headerLines);
+	const body = bodyLines.length > 0 ? bodyLines.join("\n") : undefined;
+
+	return {
+		method: method || params.method || 'GET',
+		url: params.url,
+		headers,
+		body,
+	};
 };
 
-const parseLine0 = (str: string): Parameters => {
+const parseLine0 = (str: string): BodyParameters => {
 	try {
 		const match = line0Regex.exec(str)!;
 		const method = match[1] as Method;

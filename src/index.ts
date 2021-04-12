@@ -1,6 +1,6 @@
 import { AxiosInstance, Method } from "axios";
 import axiosTemplateLiteral from "./request-literal";
-import { AxiosInstanceLiteral } from "./types";
+import { AxiosInstanceLiteral, ProxyFunctionType } from "./types";
 
 function createAxiosTemplateLiteral(
 	axiosInstance: AxiosInstance
@@ -21,10 +21,19 @@ function createAxiosTemplateLiteral(
 
 function proxyFunction(
 	this: AxiosInstanceLiteral,
-	method: Method | undefined = undefined
-) {
-	return function(this: AxiosInstanceLiteral, strings: TemplateStringsArray, ...values: any[]) {
-		return axiosTemplateLiteral(this.axiosInstance!, method, strings, ...values);
+	method: Method | undefined
+): ProxyFunctionType {
+	return function (
+		this: AxiosInstanceLiteral,
+		strings: TemplateStringsArray,
+		...values: any[]
+	) {
+		return axiosTemplateLiteral(
+			this.axiosInstance!,
+			method,
+			strings,
+			...values
+		);
 	}.bind(this);
 }
 

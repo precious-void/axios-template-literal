@@ -15,26 +15,22 @@ export type Options = BodyParameters & {
 };
 
 export interface AxiosInstanceLiteral {
-	(strings: TemplateStringsArray, ...values: any[]): ProxyFunctionType<Method>;
+	<R = any>(strings: TemplateStringsArray, ...values: any[]): AxiosPromise<R>;
 
 	axiosInstance?: AxiosInstance;
 
-	get?: RequestFunction<"GET">;
-	delete?: RequestFunction<"DELETE">;
-	head?: RequestFunction<"HEAD">;
-	post?: RequestFunction<"POST">;
-	put?: RequestFunction<"PUT">;
-	patch?: RequestFunction<"PATCH">;
-	request?: RequestFunction<Method>;
+	get?: ProxyFunctionType;
+	delete?: ProxyFunctionType;
+	head?: ProxyFunctionType;
+	post?: ProxyFunctionType;
+	put?: ProxyFunctionType;
+	patch?: ProxyFunctionType;
+	request?: ProxyFunctionType;
 }
 
-type RequestFunction<M = Method | undefined> = <R = any>(
+export type ProxyFunctionType = <R = any>(
 	this: AxiosInstanceLiteral,
 	strings: TemplateStringsArray,
 	...values: any[]
-) => ProxyFunctionType<M, R>;
+) => AxiosPromise<R>;
 
-export type ProxyFunctionType<M = Method | undefined, R = any> = (
-	axiosInstance: AxiosInstance,
-	method: M
-) => Promise<R>;
