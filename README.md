@@ -3,22 +3,40 @@
 Make HTTP requests the way TBL intended.
 
 ```javascript
-const http = require('http-template-literal')
+import Axios from "axios";
+import axiosTemplateLiteral from "./dist/cjs/index";
 
-var res = await http`
-  GET https://httpbin.org/get HTTP/1.1
-  Accept: application/json
-`
-console.log('Request one:', res.body)
+/**
+ * Create you default axios instance
+ */
+const instance = Axios.create({
+	baseURL: "https://some-domain.com/api/",
+	timeout: 1000,
+	headers: { "X-Custom-Header": "foobar" },
+});
 
-var res = await http`
-  POST https://httpbin.org/post HTTP/1.1
-  Content-Type: application/json
+/**
+ * Pass axios instance to axiosTemplateLiteral function
+ */
+const axios = createAxiosTemplateLiteral(instance);
 
-  ${JSON.stringify({
-    hello: 'world',
-    awesome: true
-  })}
-`
-console.log('Request two:', res.body)
+axios.`
+	GET /get
+	Content-Type: application/json
+
+	${JSON.stringify({
+		hello: "world",
+		awesome: true,
+	})}
+`;
+
+axios.get`
+	/get
+	Content-Type: application/json
+
+	${JSON.stringify({
+		hello: "world",
+		awesome: true,
+	})}
+`;
 ```
