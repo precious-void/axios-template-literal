@@ -6,6 +6,7 @@ import commonjs from "rollup-plugin-commonjs";
 import typescript from "rollup-plugin-typescript2";
 import pkg from "./package.json";
 import json from "@rollup/plugin-json";
+import nodePolyfills from "rollup-plugin-node-polyfills";
 
 const IS_PROD = process.env.NODE_ENV === "production";
 
@@ -13,7 +14,8 @@ const INPUT_FILE = "src/index.ts";
 
 const getPlugins = (tsDeclaration = false) => [
 	json(),
-	nodeResolve({ mainFields: ["module", "jsnext"] }),
+	nodeResolve({ preferBuiltins: true }),
+	nodePolyfills(),
 	typescript(
 		tsDeclaration
 			? {
