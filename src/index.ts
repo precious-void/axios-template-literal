@@ -1,11 +1,16 @@
-import { AxiosInstance, Method } from "axios";
+import axios, { AxiosInstance, Method } from "axios";
 import axiosTemplateLiteral from "./request-literal";
 import { AxiosInstanceLiteral, ProxyFunctionType } from "./types";
 
 function createAxiosTemplateLiteral(
-	axiosInstance: AxiosInstance
+	axiosConfiguredInstance: AxiosInstance | undefined
 ): AxiosInstanceLiteral {
-	const newInstance: AxiosInstanceLiteral = proxyFunction.call({ axiosInstance } as AxiosInstanceLiteral, undefined)
+	const axiosInstance = axiosConfiguredInstance || axios;
+
+	const newInstance: AxiosInstanceLiteral = proxyFunction.call(
+		{ axiosInstance } as AxiosInstanceLiteral,
+		undefined
+	);
 
 	newInstance.axiosInstance = axiosInstance;
 	newInstance.get = proxyFunction.call(newInstance, "GET");

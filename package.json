@@ -1,6 +1,6 @@
 {
   "name": "axios-template-literal",
-  "version": "1.0.2",
+  "version": "1.0.0",
   "description": "Ufff, sorry, too many sugar for axios.",
   "main": "dist/cjs/index.js",
   "browser": "dist/umd/axiosTemplateLiteral.js",

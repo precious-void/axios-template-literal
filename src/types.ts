@@ -10,7 +10,8 @@ export type BodyParameters = {
 };
 
 export type Options = BodyParameters & {
-	body?: string;
+	data?: string;
+	params?: string;
 	headers: Headers;
 };
 
@@ -33,4 +34,3 @@ export type ProxyFunctionType = <R = any>(
 	strings: TemplateStringsArray,
 	...values: any[]
 ) => AxiosPromise<R>;
-

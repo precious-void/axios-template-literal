@@ -1,17 +1,15 @@
-# http-template-literal
-
-Make HTTP requests the way TBL intended.
+# axios-template-literal
 
 ```javascript
-import Axios from "axios";
-import axiosTemplateLiteral from "./dist/cjs/index";
+const Axios = require("axios");
+const createAxiosTemplateLiteral = require("./dist/cjs/index");
 
 /**
  * Create you default axios instance
  */
 const instance = Axios.create({
-	baseURL: "https://some-domain.com/api/",
-	timeout: 1000,
+	baseURL: "https://gorest.co.in/public-api/",
+	timeout: 5000,
 	headers: { "X-Custom-Header": "foobar" },
 });
 
@@ -20,23 +18,30 @@ const instance = Axios.create({
  */
 const axios = createAxiosTemplateLiteral(instance);
 
-axios.`
-	GET /get
-	Content-Type: application/json
+/**
+ * Make your request!
+ */
+axios`
+ 	GET /users
 
-	${JSON.stringify({
-		hello: "world",
-		awesome: true,
-	})}
-`;
+ 	{ "page": 5 }
+`.then((res) => console.log(res));
+
+/**
+ * Or you can do it like that
+ */
 
 axios.get`
-	/get
-	Content-Type: application/json
+	/users
 
-	${JSON.stringify({
-		hello: "world",
-		awesome: true,
-	})}
-`;
+	{ "page": 5 }
+`.then((res) => console.log(res));
 ```
+
+## Acknowledgement
+
+This library was inspired by [http-template-literal](https://github.com/pfrazee/http-template-literal) by [@pfrazee](https://github.com/pfrazee).
+
+## License
+
+Licensed under the MIT License. Check the [LICENSE](https://github.com/shtelzerartem/axios-template-literal/blob/master/LICENSE) file for details.

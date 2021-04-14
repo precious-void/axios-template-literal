@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosPromise, Method } from "axios";
+import { AxiosInstance, AxiosPromise, Method } from "axios";
 import { Headers, Options, BodyParameters } from "./types";
 
 const regexUrlMethod = /^([A-z]+) ([\S]+)/;
@@ -19,10 +19,13 @@ const axiosTemplateLiteral = <T = any>(
 			headers: requestConfig.headers,
 		};
 
-		return axiosInstance.request({
-			...opts,
-			data: requestConfig.body,
-		});
+		if (opts.method.toLocaleLowerCase() === "get") {
+			opts.params = requestConfig.body;
+		} else {
+			opts.data = requestConfig.body;
+		}
+
+		return axiosInstance.request(opts);
 	} catch (err) {
 		return Promise.reject(err);
 	}
@@ -57,7 +60,8 @@ const getRequestConfig = (
 	// Parse
 	const params = parseLine0(line0, method);
 	const headers = parseHeaders(headerLines);
-	const body = bodyLines.length > 0 ? bodyLines.join("\n") : undefined;
+	const body =
+		bodyLines.length > 0 ? JSON.parse(bodyLines.join("\n")) : undefined;
 
 	return {
 		method: method || params.method || "GET",

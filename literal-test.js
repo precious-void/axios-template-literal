@@ -5,8 +5,8 @@ const createAxiosTemplateLiteral = require("./dist/cjs/index");
  * Create you default axios instance
  */
 const instance = Axios.create({
-	baseURL: "https://api.github.com",
-	timeout: 1000,
+	baseURL: "https://gorest.co.in/public-api/",
+	timeout: 5000,
 	headers: { "X-Custom-Header": "foobar" },
 });
 
@@ -15,13 +15,21 @@ const instance = Axios.create({
  */
 const axios = createAxiosTemplateLiteral(instance);
 
-axios.get`
-	/orgs/octokit/repos
-	Content-Type: application/json
-	Accept: application/vnd.github.v3+json
+/**
+ * Make your request!
+ */
+axios`
+ 	GET /users
 
-	${JSON.stringify({
-		hello: "world",
-		awesome: true,
-	})}
+ 	{ "page": 5 }
+`.then((res) => console.log(res));
+
+/**
+ * Or you can do it like that
+ */
+
+axios.get`
+	/users
+
+	{ "page": 5 }
 `.then((res) => console.log(res));
