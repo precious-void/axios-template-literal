@@ -1,7 +1,8 @@
 import axios, { AxiosInstance, AxiosPromise, Method } from "axios";
 import { Headers, Options, BodyParameters } from "./types";
 
-const line0Regex = /^([A-z]+) ([\S]+)/;
+const regexUrlMethod = /^([A-z]+) ([\S]+)/;
+const regexUrl = /^([\S]+)/;
 
 const axiosTemplateLiteral = <T = any>(
 	axiosInstance: AxiosInstance,
@@ -20,7 +21,7 @@ const axiosTemplateLiteral = <T = any>(
 
 		return axiosInstance.request({
 			...opts,
-			data: requestConfig.body
+			data: requestConfig.body,
 		});
 	} catch (err) {
 		return Promise.reject(err);
@@ -54,28 +55,44 @@ const getRequestConfig = (
 	});
 
 	// Parse
-	const params = parseLine0(line0);
+	const params = parseLine0(line0, method);
 	const headers = parseHeaders(headerLines);
 	const body = bodyLines.length > 0 ? bodyLines.join("\n") : undefined;
 
 	return {
-		method: method || params.method || 'GET',
+		method: method || params.method || "GET",
 		url: params.url,
 		headers,
 		body,
 	};
 };
 
-const parseLine0 = (str: string): BodyParameters => {
+const parseLine0 = (
+	str: string,
+	specifiedMethod: Method | undefined
+): BodyParameters => {
 	try {
-		const match = line0Regex.exec(str)!;
-		const method = match[1] as Method;
-		const url = match[2];
-		return { method, url };
+		if (specifiedMethod !== undefined) {
+			const match = regexUrl.exec(str)!;
+			const method = specifiedMethod;
+			const url = match[1];
+			return { method, url };
+		} else {
+			const match = regexUrlMethod.exec(str)!;
+			const method = match[1] as Method;
+			const url = match[2];
+			return { method, url };
+		}
 	} catch (e) {
-		throw new Error(
-			`Parse error: ${str} is invalid, must be "{METHOD} {URL}". ${e.toString()}`
-		);
+		if (specifiedMethod !== undefined) {
+			throw new Error(
+				`Parse error: ${str} is invalid for ${specifiedMethod} request, must be "{URL}". ${e.toString()}`
+			);
+		} else {
+			throw new Error(
+				`Parse error: ${str} is invalid, must be "{METHOD} {URL}". ${e.toString()}`
+			);
+		}
 	}
 };
 
