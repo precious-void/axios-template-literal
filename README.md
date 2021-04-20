@@ -8,9 +8,9 @@ const createAxiosTemplateLiteral = require("./dist/cjs/index");
  * Create you default axios instance
  */
 const instance = Axios.create({
-	baseURL: "https://gorest.co.in/public-api/",
-	timeout: 5000,
-	headers: { "X-Custom-Header": "foobar" },
+  baseURL: "https://gorest.co.in/public-api/",
+  timeout: 5000,
+  headers: { "X-Custom-Header": "foobar" },
 });
 
 /**
@@ -22,9 +22,9 @@ const axios = createAxiosTemplateLiteral(instance);
  * Make your request!
  */
 axios`
- 	GET /users
+  GET /users
 
- 	{ "page": 5 }
+  { "page": 5 }
 `.then((res) => console.log(res));
 
 /**
@@ -32,9 +32,9 @@ axios`
  */
 
 axios.get`
-	/users
+  /users
 
-	{ "page": 5 }
+  { "page": 5 }
 `.then((res) => console.log(res));
 ```
 
