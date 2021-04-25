@@ -32,6 +32,7 @@ const axios = createAxiosTemplateLiteral(instance);
  */
 axios`
   GET /users
+  Another-One-Header: With some custom value you want
 
   ${JSON.stringify({ page: 5 })}
 `.then((res) => console.log(res));
@@ -42,6 +43,7 @@ axios`
 
 axios.get`
   /users
+  Another-One-Header: With some custom value you want
 
   { "page": 5 }
 `.then((res) => console.log(res));
