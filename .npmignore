@@ -1,5 +1,4 @@
 .github
-src
 .babelrc
 .eslintrc
 literal-test.js
