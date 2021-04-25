@@ -1,4 +1,4 @@
-name: CI Publish
+name: "🚀 Publish"
 
 on:
   release:
@@ -6,6 +6,7 @@ on:
 
 jobs:
   publish:
+    name: "🚀 Publish"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1

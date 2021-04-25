@@ -1,74 +1,48 @@
-import babel from "rollup-plugin-babel";
-import nodeResolve from "rollup-plugin-node-resolve";
-import { uglify } from "rollup-plugin-uglify";
+import { babel } from "@rollup/plugin-babel";
+import { nodeResolve } from "@rollup/plugin-node-resolve";
 import bundleSize from "rollup-plugin-bundle-size";
-import commonjs from "rollup-plugin-commonjs";
+import commonjs from "@rollup/plugin-commonjs";
 import typescript from "rollup-plugin-typescript2";
-import pkg from "./package.json";
-import json from "@rollup/plugin-json";
-import nodePolyfills from "rollup-plugin-node-polyfills";
+import { main, module } from "./package.json";
+import dts from "rollup-plugin-dts";
 
 const IS_PROD = process.env.NODE_ENV === "production";
-
 const INPUT_FILE = "src/index.ts";
 
 const getPlugins = (tsDeclaration = false) => [
-	json(),
-	nodeResolve({ preferBuiltins: true }),
-	nodePolyfills(),
-	typescript(
-		tsDeclaration
-			? {
-					useTsconfigDeclarationDir: true,
-					tsconfigOverride: {
-						compilerOptions: {
-							declaration: true,
-							declarationDir: "dist/types",
-						},
-					},
-			  }
-			: {}
-	),
-	babel(),
-	commonjs({ include: "node_modules/**" }),
-	bundleSize(),
+  commonjs({ include: "node_modules/**", extensions: [".ts"] }),
+  nodeResolve({ preferBuiltins: true, extensions: [".ts"] }),
+  typescript({ useTsconfigDeclarationDir: true }),
+  babel({ babelHelpers: "bundled" }),
+  bundleSize(),
 ];
 
 const cjs = {
-	plugins: getPlugins(true),
-	input: INPUT_FILE,
-	output: {
-		file: pkg.main,
-		format: "cjs",
-	},
+  plugins: getPlugins(),
+  input: INPUT_FILE,
+  output: {
+    file: main,
+    format: "cjs",
+    exports: "default",
+  },
+  external: ["axios"],
 };
 
-const umdAndEs = {
-	plugins: getPlugins(),
-	input: INPUT_FILE,
-	output: [
-		{
-			name: pkg.umdName,
-			file: pkg.browser,
-			format: "umd",
-		},
-		{
-			file: pkg.module,
-			format: "es",
-		},
-	],
+const Es = {
+  plugins: getPlugins(),
+  input: INPUT_FILE,
+  output: {
+    file: module,
+    format: "es",
+    exports: "default",
+  },
+  external: ["axios"],
 };
 
-const umdMin = {
-	plugins: [...getPlugins(), uglify()],
-	input: INPUT_FILE,
-	output: {
-		name: pkg.umdName,
-		file: pkg.browser.split(".").reduce((acc, item, i, arr) => {
-			return i === arr.length - 1 ? acc + "min." + item : acc + item + ".";
-		}, ""),
-		format: "umd",
-	},
+const tsDeclaration = {
+  input: "./dist/types/index.d.ts",
+  output: [{ file: "dist/index.d.ts", format: "es" }],
+  plugins: [dts()],
 };
 
-export default IS_PROD ? [cjs, umdAndEs, umdMin] : cjs;
+export default IS_PROD ? [cjs, Es, tsDeclaration] : cjs;
