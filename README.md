@@ -1,8 +1,17 @@
 # axios-template-literal
 
-```javascript
+## Install
+
+```shell
+npm install axios-template-literal
+yarn add axios-template-literal
+```
+
+## Usage
+
+```typescript
 const Axios = require("axios");
-const createAxiosTemplateLiteral = require("./dist/cjs/index");
+const createAxiosTemplateLiteral = require("axios-template-literal");
 
 /**
  * Create you default axios instance
@@ -24,17 +33,34 @@ const axios = createAxiosTemplateLiteral(instance);
 axios`
   GET /users
 
-  { "page": 5 }
+  ${JSON.stringify({ page: 5 })}
 `.then((res) => console.log(res));
 
 /**
- * Or you can do it like that
+ * Or you can do it like that, predefining the request method
  */
 
 axios.get`
   /users
 
   { "page": 5 }
+`.then((res) => console.log(res));
+
+/**
+ * For the typescript support you can pass return type of request promise
+ */
+
+type YouCustomType = string;
+axios<YouCustomType>`
+  GET /users
+
+  ${JSON.stringify({ page: 5 })}
+`.then((res) => console.log(res));
+
+axios.get<YouCustomType>`
+  GET /users
+
+  ${JSON.stringify({ page: 5 })}
 `.then((res) => console.log(res));
 ```
 
